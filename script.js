@@ -1,12 +1,14 @@
 // =====================
 // Categories (fixed) + Colors
 // =====================
+
 const CATEGORIES = {
-  ENRICHMENT: { label: "IOC / Enrichment", prefix: "↑→", color: "#3B82F6" },
-  FRAMEWORKS: { label: "Frameworks / Knowledge", prefix: "→→", color: "#8B5CF6" },
-  UTILITIES:  { label: "Decode / Utilities", prefix: "↓↓", color: "#F59E0B" },
-  SANDBOX:    { label: "Malware / Sandbox label: "Recon / Exposure", prefix: "↑↑", color: "#F97316" },  SANDBOX:    { label: "Malware / Sandbox", prefix: "↓←", color: "#EF4444" },
-  DIRECTORIES:{ label: "Directories", prefix: "→↓", color: "#14B8A6" }
+  ENRICHMENT:  { label: "IOC / Enrichment",        prefix: "↑→", color: "#3B82F6" },
+  FRAMEWORKS:  { label: "Frameworks / Knowledge",  prefix: "→→", color: "#8B5CF6" },
+  UTILITIES:   { label: "Decode / Utilities",      prefix: "↓↓", color: "#F59E0B" },
+  SANDBOX:     { label: "Malware / Sandbox",       prefix: "↓←", color: "#EF4444" },
+  RECON:       { label: "Recon / Exposure",        prefix: "↑↑", color: "#F97316" },
+  DIRECTORIES: { label: "Directories",             prefix: "→↓", color: "#14B8A6" }
 };
 
 // =====================
