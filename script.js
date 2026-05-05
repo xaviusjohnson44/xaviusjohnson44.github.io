@@ -641,3 +641,120 @@ renderToolList("");
 renderHistory();
 loadAudioPref();
 setStatus("Ready.", "neutral");
+
+
+// =====================
+// Training Mode State
+// =====================
+let trainingMode = false;
+let trainingTarget = null;
+let trainingFails = 0;
+
+// =====================
+// Buffer Timeout
+// =====================
+const BUFFER_TIMEOUT_MS = 3500;
+let bufferTimer = null;
+
+function resetBufferTimer(){
+  clearTimeout(bufferTimer);
+  consoleBody.classList.remove("timeout");
+
+  bufferTimer = setTimeout(() => {
+    if(sequence.length){
+      sequence = [];
+      renderSequence();
+      consoleBody.classList.add("timeout");
+      setStatus("Stratagem buffer timed out.", "neutral");
+    }
+  }, BUFFER_TIMEOUT_MS);
+}
+
+// =====================
+// Training Helpers
+// =====================
+function startTraining(){
+  trainingMode = true;
+  trainingFails = 0;
+  trainingTarget = TOOLS[Math.floor(Math.random()*TOOLS.length)];
+  document.getElementById("trainingPrompt").hidden = false;
+  document.getElementById("trainingPrompt").textContent =
+    `MISSION: ${trainingTarget.desc}`;
+  setStatus("Training mode active.", "neutral");
+}
+
+function stopTraining(){
+  trainingMode = false;
+  trainingTarget = null;
+  document.getElementById("trainingPrompt").hidden = true;
+  setStatus("Training mode off.", "neutral");
+}
+
+// =====================
+// Match logic override
+// =====================
+function tryMatchAndRender(){
+  const s = getSequenceString();
+  if(!s) return;
+
+  if(trainingMode){
+    if(trainingTarget.code === s){
+      renderResult(trainingTarget,true);
+      sfxSuccess();
+      setStatus("✅ Mission success.", "ok");
+      startTraining(); // next mission
+    }else{
+      trainingFails++;
+      setStatus("❌ Incorrect stratagem.", "bad");
+      if(trainingFails>=2){
+        setStatus(`Hint: Prefix ${trainingTarget.code.slice(0,2)}`, "neutral");
+      }
+    }
+    return;
+  }
+
+  const tool = TOOL_BY_CODE.get(s);
+  if(tool){
+    renderResult(tool,true);
+    sfxSuccess();
+    setStatus(`Matched: ${tool.name}`, "ok");
+  }
+}
+
+// =====================
+// Input handling
+// =====================
+function onKeyDown(e){
+  const map={ArrowUp:"↑",ArrowDown:"↓",ArrowLeft:"←",ArrowRight:"→"};
+
+  if(map[e.key]){
+    e.preventDefault();
+    sequence.push(map[e.key]);
+    renderSequence();
+    sfxTick();
+    resetBufferTimer();
+    tryMatchAndRender();
+  }
+
+  if(e.key==="Escape"){clearSequence()}
+  if(e.key==="Backspace"){undoSequence()}
+  if(e.key==="Enter"){launchCurrent()}
+}
+
+// =====================
+// Help modal wiring
+// =====================
+document.getElementById("trainingToggle")
+  .addEventListener("change",e=>{
+    e.target.checked ? startTraining() : stopTraining();
+  });
+
+// =====================
+// Init
+// =====================
+document.addEventListener("keydown",onKeyDown);
+loadAudioPref();
+renderSequence();
+renderToolList();
+renderHistory();
+setStatus("Ready.", "neutral");
