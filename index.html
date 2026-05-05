@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
   <header class="topbar">
     <div class="brand">
@@ -30,12 +31,10 @@
           <span>Audio</span>
         </label>
 
-        <button id="btnTraining" class="btn ghost small" type="button" title="Training mode">
-          Training
-        </button>
+        <!-- ✅ Training button on home page -->
+        <button id="btnTraining" class="btn ghost small" type="button">Training</button>
+        <button id="btnHelp" class="btn ghost small" type="button">Help</button>
       </div>
-
-      <button id="btnHelp" class="btn ghost" type="button">Help</button>
     </div>
   </header>
 
@@ -52,9 +51,12 @@
       <div class="console-body" id="consoleBody">
         <div class="sequence" id="sequenceDisplay" aria-live="polite">—</div>
         <div class="subrow">
-          <div class="mini">Prefix-by-category enabled • Categories fixed • Timeout enabled</div>
+          <div class="mini">Prefix-by-category enabled • Categories fixed</div>
           <div class="mini right" id="prefixHint">Type a code…</div>
         </div>
+
+        <!-- ✅ Training prompt appears here -->
+        <div id="trainingPrompt" class="training" hidden></div>
       </div>
 
       <div class="console-actions">
@@ -70,7 +72,7 @@
       <section class="card panel">
         <div class="panel-head">
           <h2>Browse Tools</h2>
-          <input id="toolSearch" class="input" type="search" placeholder="Search tools (e.g., 'hash', 'dns', 'mitre')"/>
+          <input id="toolSearch" class="input" type="search" placeholder="Search tools (e.g., hash, dns, mitre)"/>
         </div>
         <div id="toolList" class="toollist" aria-live="polite"></div>
       </section>
@@ -85,70 +87,36 @@
     </section>
   </main>
 
-  <!-- Training Modal -->
-  <div id="trainingModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="trainingTitle" hidden>
-    <div class="modal-backdrop" id="trainingBackdrop"></div>
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="trainingTitle">Training Mode</h3>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <span id="trainingScore" class="pill" style="background: rgba(0,0,0,.20);">0 / 0</span>
-          <button class="btn ghost small" id="btnCloseTraining" type="button">Exit</button>
-        </div>
-      </div>
-
-      <div class="modal-body">
-        <p id="trainingPrompt" style="margin-top:0;">
-          Press <strong>Start</strong> to receive a mission. Then enter the stratagem code with arrow keys.
-        </p>
-
-        <div class="training-panel">
-          <div class="training-row">
-            <div class="badge" id="trainingCategoryBadge">Category: —</div>
-            <div class="badge" id="trainingHintBadge">Hint: —</div>
-          </div>
-
-          <div class="training-actions">
-            <button id="btnTrainingStart" class="btn primary" type="button">Start</button>
-            <button id="btnTrainingNext" class="btn ghost" type="button" disabled>Next</button>
-            <button id="btnTrainingReveal" class="btn ghost" type="button" disabled>Reveal Answer</button>
-          </div>
-
-          <div class="tiny" id="trainingFooter">
-            Tip: Training never auto-opens external tools — it’s just muscle memory practice.
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Help Modal -->
+  <!-- ✅ Help Modal -->
   <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
     <div class="modal-backdrop" id="helpBackdrop"></div>
+
     <div class="modal-card">
       <div class="modal-head">
-        <h3 id="helpTitle">How it works</h3>
+        <h3 id="helpTitle">Help</h3>
         <button class="btn ghost small" id="btnCloseHelp" type="button">Close</button>
       </div>
 
       <div class="modal-body">
         <p>
-          Enter a stratagem code using <strong>arrow keys</strong>. A matching tool card will appear.
-          Press <strong>Enter</strong> (or Launch) to open it in a new tab.
+          Use <strong>arrow keys</strong> to enter stratagem codes. When a code matches, a tool card drops in.
+          Press <strong>Enter</strong> to launch.
+        </p>
+
+        <h4>Training Mode</h4>
+        <p class="tiny">
+          Click <strong>Training</strong> on the home page to start/stop. You’ll get a mission prompt; enter the correct stratagem to succeed.
         </p>
 
         <h4>Fixed Category Prefixes</h4>
+        <!-- ✅ This is the legend container the script populates -->
         <div id="categoryLegend" class="legend"></div>
 
-        <h4>Timeout</h4>
+        <h4>Tips</h4>
         <ul>
-          <li>If you pause too long mid-code, the buffer clears automatically (like a failed input window).</li>
-        </ul>
-
-        <h4>Training</h4>
-        <ul>
-          <li>Training gives you a “mission” and you enter the correct tool stratagem.</li>
-          <li>Use <em>Reveal</em> if you get stuck; <em>Next</em> loads another prompt.</li>
+          <li>Backspace undoes the last arrow. Esc clears the whole code.</li>
+          <li>Buffer times out after a short inactivity period (Helldivers feel).</li>
+          <li>Audio stingers are optional; toggle them in the header.</li>
         </ul>
 
         <p class="tiny">
