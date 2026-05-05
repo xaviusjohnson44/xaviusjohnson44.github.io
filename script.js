@@ -1,58 +1,57 @@
 // =====================
-// Fixed Categories + Colors (Left accent bar)
+// Categories (fixed) + Colors
 // =====================
 const CATEGORIES = {
   ENRICHMENT: { label: "IOC / Enrichment", prefix: "↑→", color: "#3B82F6" },
   FRAMEWORKS: { label: "Frameworks / Knowledge", prefix: "→→", color: "#8B5CF6" },
   UTILITIES:  { label: "Decode / Utilities", prefix: "↓↓", color: "#F59E0B" },
-  SANDBOX:    { label: "Malware / Sandbox", prefix: "↓←", color: "#EF4444" },
-  RECON:      { label: "Recon / Exposure", prefix: "↑↑", color: "#F97316" },
+  SANDBOX:    { label: "Malware / Sandbox label: "Recon / Exposure", prefix: "↑↑", color: "#F97316" },  SANDBOX:    { label: "Malware / Sandbox", prefix: "↓←", color: "#EF4444" },
   DIRECTORIES:{ label: "Directories", prefix: "→↓", color: "#14B8A6" }
 };
 
 // =====================
-// Tool Registry
+// Tools
 // =====================
 const TOOLS = [
   { name:"VirusTotal", url:"https://www.virustotal.com/gui/home/upload", category:"ENRICHMENT", code:"↑→↓↓←",
-    desc:"Enrich: file/hash/URL/domain/IP reputation & analysis." },
+    desc:"Reputation & analysis for files, hashes, URLs, domains, and IPs." },
   { name:"urlscan.io", url:"https://urlscan.io/", category:"ENRICHMENT", code:"↑→→↓←",
-    desc:"Enrich: safe URL scan with screenshot, requests, and indicators." },
+    desc:"Safely scan a URL to capture requests, screenshots, and indicators." },
   { name:"AbuseIPDB", url:"https://www.abuseipdb.com/", category:"ENRICHMENT", code:"↑→←↓←",
-    desc:"Enrich: IP reputation from abuse reports." },
+    desc:"IP reputation from community abuse reports and confidence scoring." },
   { name:"Cisco Talos Intelligence", url:"https://www.talosintelligence.com/", category:"ENRICHMENT", code:"↑→↓→←",
-    desc:"Enrich: threat intel for IP/domain reputation." },
+    desc:"Threat intel for IP/domain reputation and related insights." },
 
   { name:"MITRE ATT&CK", url:"https://attack.mitre.org/", category:"FRAMEWORKS", code:"→→↑↓←",
-    desc:"Map: tactics & techniques knowledge base." },
+    desc:"Tactics & techniques knowledge base for mapping adversary behavior." },
   { name:"ATT&CK Navigator", url:"https://mitre-attack.github.io/attack-navigator/", category:"FRAMEWORKS", code:"→→↓↑←",
-    desc:"Visualize: build ATT&CK layers and coverage maps." },
+    desc:"Visualize and annotate ATT&CK matrices with layers." },
 
   { name:"CyberChef", url:"https://gchq.github.io/CyberChef/", category:"UTILITIES", code:"↓↓→↑←",
-    desc:"Decode/transform: Swiss Army knife for data." },
+    desc:"Decode/encode/transform data with a huge set of operations." },
 
-  { name:"MalwareBazaar", url:"https://bazaar.abuse.ch/", category:"SANDBOX", code:"↓←↓→↑",
-    desc:"Malware: sample exchange + hunting." },
+  { name:"MalwareBazaar (abuse.ch)", url:"https://bazaar.abuse.ch/", category:"SANDBOX", code:"↓←↓→↑",
+    desc:"Malware sample exchange for hunting, alerts, and enrichment." },
   { name:"Hybrid Analysis", url:"https://www.hybrid-analysis.com/", category:"SANDBOX", code:"↓←→↓↑",
-    desc:"Malware: automated sandbox reports." },
+    desc:"Automated malware analysis service (Falcon Sandbox powered)." },
   { name:"ANY.RUN", url:"https://any.run/", category:"SANDBOX", code:"↓←↑→→",
-    desc:"Malware: interactive sandbox." },
+    desc:"Interactive malware sandbox with live analysis and reports." },
   { name:"Joe Sandbox", url:"https://www.joesandbox.com/", category:"SANDBOX", code:"↓←↑↓→",
-    desc:"Malware/phishing: deep analysis reports." },
+    desc:"Automated malware and phishing analysis with deep reporting." },
 
   { name:"Shodan", url:"https://www.shodan.io/", category:"RECON", code:"↑↑→↓←",
-    desc:"Recon: internet-connected device search." },
+    desc:"Search engine for internet-connected devices and exposures." },
   { name:"Censys", url:"https://censys.io/", category:"RECON", code:"↑↑→→←",
-    desc:"Recon: internet asset discovery & cert intel." },
+    desc:"Internet asset discovery and certificate/host intelligence." },
   { name:"crt.sh", url:"https://crt.sh/", category:"RECON", code:"↑↑↓→←",
-    desc:"Recon: certificate transparency search." },
+    desc:"Certificate Transparency search to find certs and related domains." },
   { name:"SecurityTrails", url:"https://securitytrails.com/", category:"RECON", code:"↑↑↓↓→",
-    desc:"Recon: historical DNS & infra intel." },
+    desc:"Historical DNS and domain infrastructure intelligence." },
 
   { name:"OSINT Framework", url:"https://osintframework.com/", category:"DIRECTORIES", code:"→↓↑→↑",
-    desc:"Directory: curated OSINT resources by type." },
-  { name:"cipher387 OSINT collection", url:"https://github.com/cipher387/osint_stuff_tool_collection", category:"DIRECTORIES", code:"→↓→↑↓",
-    desc:"Directory: huge OSINT tool collection." }
+    desc:"Curated OSINT directory organized by investigation type." },
+  { name:"cipher387 OSINT tool collection (GitHub)", url:"https://github.com/cipher387/osint_stuff_tool_collection", category:"DIRECTORIES", code:"→↓→↑↓",
+    desc:"Large OSINT tools collection repo (hundreds+)." }
 ];
 
 const TOOL_BY_CODE = new Map(TOOLS.map(t => [t.code, t]));
@@ -64,16 +63,24 @@ let sequence = [];
 const MAX_LEN = 9;
 
 const LS_HISTORY = "strat_history_v1";
-const LS_AUDIO   = "strat_audio_v1";
+const LS_AUDIO = "strat_audio_v1";
 
-// Buffer timeout (Helldivers feel)
 const BUFFER_TIMEOUT_MS = 3500;
 let bufferTimer = null;
 
-// Training mode
 let trainingMode = false;
 let trainingTarget = null;
 let trainingFails = 0;
+
+// Mission prompts by category (keeps it “SOC real”)
+const TRAINING_MISSIONS = {
+  ENRICHMENT:  "MISSION: Enrich an indicator (hash / URL / domain / IP).",
+  FRAMEWORKS:  "MISSION: Map observed behavior to tactics and techniques.",
+  UTILITIES:   "MISSION: Decode/transform data (URL/B64/timestamps/etc.).",
+  SANDBOX:     "MISSION: Analyze a suspicious file/URL in a sandbox.",
+  RECON:       "MISSION: Investigate external exposure & infrastructure.",
+  DIRECTORIES: "MISSION: Find the right OSINT resource directory fast."
+};
 
 // =====================
 // DOM
@@ -82,7 +89,6 @@ const sequenceDisplay = document.getElementById("sequenceDisplay");
 const statusText = document.getElementById("statusText");
 const prefixHint = document.getElementById("prefixHint");
 const resultRegion = document.getElementById("resultRegion");
-const consoleBody = document.getElementById("consoleBody");
 
 const btnClear = document.getElementById("btnClear");
 const btnUndo = document.getElementById("btnUndo");
@@ -93,12 +99,16 @@ const toolList = document.getElementById("toolList");
 const historyList = document.getElementById("historyList");
 const btnClearHistory = document.getElementById("btnClearHistory");
 
-const helpModal = document.getElementById("helpModal");
-const btnHelp = document.getElementById("btnHelp");
-const btnCloseHelp = document.getElementById("btnCloseHelp");
-
-const trainingToggle = document.getElementById("trainingToggle");
+const consoleBody = document.getElementById("consoleBody");
 const trainingPrompt = document.getElementById("trainingPrompt");
+
+const btnHelp = document.getElementById("btnHelp");
+const helpModal = document.getElementById("helpModal");
+const helpBackdrop = document.getElementById("helpBackdrop");
+const btnCloseHelp = document.getElementById("btnCloseHelp");
+const categoryLegend = document.getElementById("categoryLegend");
+
+const btnTraining = document.getElementById("btnTraining");
 
 const audioToggle = document.getElementById("audioToggle");
 
@@ -106,7 +116,6 @@ const audioToggle = document.getElementById("audioToggle");
 // Helpers
 // =====================
 function setStatus(msg, tone="neutral"){
-  if (!statusText) return;
   statusText.textContent = msg;
   const toneColor = tone === "ok" ? "var(--teal)" : tone === "bad" ? "var(--red)" : "var(--muted)";
   statusText.style.color = toneColor;
@@ -115,7 +124,6 @@ function setStatus(msg, tone="neutral"){
 function getSequenceString(){ return sequence.join(""); }
 
 function renderPrefixHint(s){
-  if (!prefixHint) return;
   if (s.length < 2) { prefixHint.textContent = "Type a code…"; return; }
   const prefix = s.slice(0,2);
   const cat = Object.values(CATEGORIES).find(c => c.prefix === prefix);
@@ -124,15 +132,12 @@ function renderPrefixHint(s){
 
 function renderSequence(){
   const s = getSequenceString();
-  if (!sequenceDisplay) return;
-
   if (!s.length){
     sequenceDisplay.textContent = "—";
     renderPrefixHint(s);
     return;
   }
 
-  // spans for last-arrow animation (CSS)
   sequenceDisplay.innerHTML = "";
   s.split("").forEach((ch, idx) => {
     const span = document.createElement("span");
@@ -145,23 +150,23 @@ function renderSequence(){
 }
 
 function flashConsole(kind="flash"){
-  if (!consoleBody) return;
-  consoleBody.classList.remove("flash", "success", "timeout");
+  consoleBody.classList.remove("flash","success","timeout");
   void consoleBody.offsetWidth;
   consoleBody.classList.add(kind);
 }
 
 function resetBufferTimer(){
   clearTimeout(bufferTimer);
-  if (consoleBody) consoleBody.classList.remove("timeout");
+  consoleBody.classList.remove("timeout");
 
   bufferTimer = setTimeout(() => {
     if (sequence.length){
       sequence = [];
       renderSequence();
-      if (consoleBody) consoleBody.classList.add("timeout");
+      renderResult(null);
+      consoleBody.classList.add("timeout");
       setStatus("Stratagem buffer timed out.", "neutral");
-      // In training mode, keep the prompt; only clear buffer
+      // trainingPrompt remains visible if trainingMode is on
     }
   }, BUFFER_TIMEOUT_MS);
 }
@@ -170,14 +175,14 @@ function clearSequence(){
   sequence = [];
   renderSequence();
   renderResult(null);
-  setStatus("Ready.", "neutral");
+  setStatus(trainingMode ? "Training active. Enter the correct stratagem." : "Ready.", "neutral");
 }
 
 function undoSequence(){
   sequence.pop();
   renderSequence();
   renderResult(null);
-  setStatus("Ready.", "neutral");
+  setStatus(trainingMode ? "Training active. Enter the correct stratagem." : "Ready.", "neutral");
 }
 
 function safeOpen(url){
@@ -185,15 +190,15 @@ function safeOpen(url){
 }
 
 // =====================
-// Audio (optional) - WebAudio
+// Audio (WebAudio synth, optional)
 // =====================
 let audioEnabled = false;
 let audioCtx = null;
 
 function loadAudioPref(){
-  try { audioEnabled = JSON.parse(localStorage.getItem(LS_AUDIO) || "false"); }
-  catch { audioEnabled = false; }
-  if (audioToggle) audioToggle.checked = audioEnabled;
+  try{ audioEnabled = JSON.parse(localStorage.getItem(LS_AUDIO) || "false"); }
+  catch{ audioEnabled = false; }
+  audioToggle.checked = audioEnabled;
 }
 
 function saveAudioPref(val){
@@ -228,19 +233,18 @@ function playTone({freq=440, duration=0.06, type="sine", gain=0.04, when=0}){
   osc.stop(t0 + duration + 0.02);
 }
 
-function sfxTick(){ playTone({freq: 980, duration: 0.035, type:"square", gain: 0.015}); }
+function sfxTick(){ playTone({freq:980, duration:0.035, type:"square", gain:0.015}); }
 function sfxSuccess(){
-  playTone({freq: 523.25, duration: 0.07, type:"sine", gain: 0.035, when: 0.00});
-  playTone({freq: 659.25, duration: 0.07, type:"sine", gain: 0.035, when: 0.07});
-  playTone({freq: 783.99, duration: 0.09, type:"sine", gain: 0.04,  when: 0.14});
+  playTone({freq:523.25, duration:0.07, type:"sine", gain:0.035, when:0.00});
+  playTone({freq:659.25, duration:0.07, type:"sine", gain:0.035, when:0.07});
+  playTone({freq:783.99, duration:0.09, type:"sine", gain:0.04,  when:0.14});
 }
-function sfxLaunch(){ playTone({freq: 880, duration: 0.09, type:"triangle", gain: 0.03}); }
+function sfxLaunch(){ playTone({freq:880, duration:0.09, type:"triangle", gain:0.03}); }
 
 // =====================
-// Result rendering (with drop animation)
+// Rendering
 // =====================
 function renderResult(tool, animateDrop=false){
-  if (!resultRegion) return;
   resultRegion.innerHTML = "";
   if (!tool) return;
 
@@ -258,14 +262,14 @@ function renderResult(tool, animateDrop=false){
           <div class="rc-meta">
             <span class="badge" style="border-color:${accent}55;">
               <span style="color:${accent};font-weight:800;">●</span>
-              ${cat?.label || "Category"} • ${cat?.prefix || ""} • Code:
+              ${cat.label} • ${cat.prefix} • Code:
               <span style="letter-spacing:4px;">${tool.code.split("").join(" ")}</span>
             </span>
           </div>
         </div>
         <button class="btn primary" id="resultLaunch" type="button">Open</button>
       </div>
-      <p class="rc-desc">${tool.desc || ""}</p>
+      <p class="rc-desc">${tool.desc}</p>
       <div class="rc-actions">
         <span class="badge">Tip: Press Enter to launch</span>
         <span class="badge">Backspace = Undo • Esc = Clear</span>
@@ -274,7 +278,7 @@ function renderResult(tool, animateDrop=false){
   `;
 
   resultRegion.appendChild(card);
-  document.getElementById("resultLaunch")?.addEventListener("click", () => {
+  document.getElementById("resultLaunch").addEventListener("click", () => {
     addHistory(tool);
     sfxLaunch();
     safeOpen(tool.url);
@@ -283,92 +287,111 @@ function renderResult(tool, animateDrop=false){
 }
 
 // =====================
-// Training Mode
+// Help + Legend (FIXED)
 // =====================
-const TRAINING_MISSIONS = [
-  { key:"ENRICHMENT",  prompt:"MISSION: Enrich a suspicious indicator (hash / URL / domain / IP)." },
-  { key:"FRAMEWORKS",  prompt:"MISSION: Map adversary behavior to tactics/techniques." },
-  { key:"UTILITIES",   prompt:"MISSION: Decode/transform data (urls, b64, timestamps, etc.)." },
-  { key:"SANDBOX",     prompt:"MISSION: Analyze a suspicious file or malware behavior safely." },
-  { key:"RECON",       prompt:"MISSION: Discover internet exposure / external infrastructure clues." },
-  { key:"DIRECTORIES", prompt:"MISSION: Find the right OSINT resource directory quickly." }
-];
+function openHelp(){
+  // Populate legend every time help opens (so it never goes stale)
+  categoryLegend.innerHTML = "";
+  Object.values(CATEGORIES).forEach(c => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.innerHTML = `
+      <div class="legend-swatch" style="background:${c.color}"></div>
+      <div>
+        <div class="lbl">${c.label}</div>
+        <div class="sub">Prefix: <span style="letter-spacing:4px;">${c.prefix.split("").join(" ")}</span></div>
+      </div>
+    `;
+    categoryLegend.appendChild(item);
+  });
 
+  helpModal.hidden = false;
+}
+function closeHelp(){ helpModal.hidden = true; }
+
+// =====================
+// Training Mode (HOME BUTTON)
+// =====================
 function startTraining(){
   trainingMode = true;
   trainingFails = 0;
-
-  // choose a tool, bias toward variety
   trainingTarget = TOOLS[Math.floor(Math.random() * TOOLS.length)];
-  const catKey = trainingTarget.category;
 
-  const mission = TRAINING_MISSIONS.find(m => m.key === catKey);
-  if (trainingPrompt){
-    trainingPrompt.hidden = false;
-    trainingPrompt.textContent = mission ? mission.prompt : `MISSION: ${trainingTarget.desc}`;
-  }
+  trainingPrompt.hidden = false;
+  trainingPrompt.textContent = TRAINING_MISSIONS[trainingTarget.category] || `MISSION: ${trainingTarget.desc}`;
 
-  // don’t show the tool card immediately in training; earn it
+  btnTraining.textContent = "Training: ON";
+  setStatus("Training active. Enter the correct stratagem.", "neutral");
+
+  // Clear buffer + hide result; you must earn the card
+  sequence = [];
+  renderSequence();
   renderResult(null);
-  setStatus("Training mode active. Enter the correct stratagem.", "neutral");
 }
 
 function stopTraining(){
   trainingMode = false;
   trainingTarget = null;
   trainingFails = 0;
-  if (trainingPrompt){
-    trainingPrompt.hidden = true;
-    trainingPrompt.textContent = "";
-  }
-  setStatus("Training mode off.", "neutral");
+
+  trainingPrompt.hidden = true;
+  trainingPrompt.textContent = "";
+
+  btnTraining.textContent = "Training";
+  setStatus("Ready.", "neutral");
+
+  // Clear buffer
+  sequence = [];
+  renderSequence();
+  renderResult(null);
+}
+
+function nextTrainingMission(){
+  trainingFails = 0;
+  trainingTarget = TOOLS[Math.floor(Math.random() * TOOLS.length)];
+  trainingPrompt.textContent = TRAINING_MISSIONS[trainingTarget.category] || `MISSION: ${trainingTarget.desc}`;
+  sequence = [];
+  renderSequence();
+  renderResult(null);
+  setStatus("New mission. Enter the correct stratagem.", "neutral");
 }
 
 function handleTrainingAttempt(code){
   if (!trainingTarget) return;
 
   if (code === trainingTarget.code){
-    // success
     flashConsole("success");
     sfxSuccess();
-    setStatus("✅ Mission success. New mission loaded.", "ok");
+    setStatus("✅ Mission success.", "ok");
     renderResult(trainingTarget, true);
 
-    // next mission after a brief moment
-    setTimeout(() => {
-      clearSequence();
-      startTraining();
-    }, 500);
+    // Load next mission shortly after success
+    setTimeout(() => nextTrainingMission(), 700);
     return;
   }
 
-  // fail
   trainingFails++;
   setStatus("❌ Incorrect stratagem.", "bad");
 
-  // give a hint after 2 fails
   if (trainingFails >= 2){
     const prefix = trainingTarget.code.slice(0,2);
     const cat = Object.values(CATEGORIES).find(c => c.prefix === prefix);
-    setStatus(`Hint: Use prefix ${prefix} (${cat?.label || "category"}).`, "neutral");
+    setStatus(`Hint: Prefix ${prefix} (${cat?.label || "category"}).`, "neutral");
   }
 }
 
 // =====================
-// Normal matching
+// Matching (normal vs training)
 // =====================
 function tryMatchAndRender(){
   const code = getSequenceString();
-  if (!code) return null;
+  if (!code) return;
 
   if (trainingMode){
-    // Only validate on full match length or Enter? We'll allow immediate check on exact-match attempt:
-    // If user is still typing, don't penalize unless the code exactly matches a tool length.
-    // But simplest: check only when they match any tool code length.
-    if ([...TOOL_BY_CODE.keys()].some(k => k.length === code.length)) {
-      handleTrainingAttempt(code);
-    }
-    return null;
+    // Only evaluate attempts when typed length matches any known code length
+    const anySameLength = [...TOOL_BY_CODE.keys()].some(k => k.length === code.length);
+    if (anySameLength) handleTrainingAttempt(code);
+    return;
   }
 
   const tool = TOOL_BY_CODE.get(code);
@@ -377,23 +400,7 @@ function tryMatchAndRender(){
     flashConsole("success");
     sfxSuccess();
     setStatus(`Matched: ${tool.name}`, "ok");
-    return tool;
   }
-
-  // prefix hint
-  if (code.length >= 2){
-    const prefix = code.slice(0,2);
-    const cat = Object.values(CATEGORIES).find(c => c.prefix === prefix);
-    if (cat){
-      setStatus(`No exact match yet. ${cat.label} prefix detected (${prefix}).`, "neutral");
-      renderResult(null);
-      return null;
-    }
-  }
-
-  setStatus("Unknown code/prefix.", "bad");
-  renderResult(null);
-  return null;
 }
 
 function launchCurrent(){
@@ -403,7 +410,6 @@ function launchCurrent(){
     return;
   }
 
-  // In training mode, Enter should validate attempt
   if (trainingMode){
     handleTrainingAttempt(code);
     return;
@@ -421,7 +427,7 @@ function launchCurrent(){
 }
 
 // =====================
-// History + Browser Lists
+// History + Browser
 // =====================
 function loadHistory(){
   try{
@@ -442,7 +448,6 @@ function addHistory(tool){
   renderHistory();
 }
 function renderHistory(){
-  if (!historyList) return;
   const items = loadHistory();
   historyList.innerHTML = items.length ? "" : `<div class="tiny">No recent calls yet.</div>`;
   for (const h of items){
@@ -462,7 +467,6 @@ function renderHistory(){
 }
 
 function renderToolList(filter=""){
-  if (!toolList) return;
   const q = (filter || "").toLowerCase().trim();
   const filtered = !q ? TOOLS : TOOLS.filter(t => {
     const cat = CATEGORIES[t.category]?.label || "";
@@ -483,7 +487,7 @@ function renderToolList(filter=""){
       <div class="toolchip" style="background:${color}"></div>
       <div style="min-width:0;">
         <p class="toolname">${t.name}</p>
-        <div class="toolmeta">${cat?.label || ""} • Prefix ${cat?.prefix || ""}</div>
+        <div class="toolmeta">${cat.label} • Prefix ${cat.prefix}</div>
         <div class="toolcode">${t.code.split("").join(" ")}</div>
       </div>
       <div class="toola">
@@ -501,44 +505,6 @@ function renderToolList(filter=""){
 }
 
 // =====================
-// Help Modal wiring (safe even if elements missing)
-// =====================
-function openHelp(){ if (helpModal) helpModal.hidden = false; }
-function closeHelp(){ if (helpModal) helpModal.hidden = true; }
-
-btnHelp?.addEventListener("click", openHelp);
-btnCloseHelp?.addEventListener("click", closeHelp);
-
-// Click outside modal to close (if backdrop exists)
-helpModal?.querySelector(".modal-backdrop")?.addEventListener("click", closeHelp);
-
-// Training toggle wiring (THIS is usually what’s missing)
-trainingToggle?.addEventListener("change", (e) => {
-  if (e.target.checked) startTraining();
-  else stopTraining();
-});
-
-// Audio toggle
-audioToggle?.addEventListener("change", (e) => {
-  saveAudioPref(e.target.checked);
-  setStatus(audioEnabled ? "Audio enabled." : "Audio disabled.", "neutral");
-  ensureAudio();
-});
-
-// Buttons
-btnClear?.addEventListener("click", clearSequence);
-btnUndo?.addEventListener("click", undoSequence);
-btnLaunch?.addEventListener("click", launchCurrent);
-
-btnClearHistory?.addEventListener("click", () => {
-  localStorage.removeItem(LS_HISTORY);
-  renderHistory();
-  setStatus("History cleared.", "neutral");
-});
-
-toolSearch?.addEventListener("input", (e) => renderToolList(e.target.value));
-
-// =====================
 // Input handling
 // =====================
 function onKeyDown(e){
@@ -551,22 +517,48 @@ function onKeyDown(e){
   const map = { ArrowUp:"↑", ArrowDown:"↓", ArrowLeft:"←", ArrowRight:"→" };
   if (map[k]){
     e.preventDefault();
-
     if (sequence.length >= MAX_LEN){
       setStatus("Max code length reached. Press Esc to clear.", "bad");
       return;
     }
-
     sequence.push(map[k]);
     renderSequence();
-
     flashConsole("flash");
     sfxTick();
-
     resetBufferTimer();
     tryMatchAndRender();
   }
 }
+
+// =====================
+// Wire up UI
+// =====================
+btnClear.addEventListener("click", clearSequence);
+btnUndo.addEventListener("click", undoSequence);
+btnLaunch.addEventListener("click", launchCurrent);
+
+toolSearch.addEventListener("input", (e) => renderToolList(e.target.value));
+
+btnClearHistory.addEventListener("click", () => {
+  localStorage.removeItem(LS_HISTORY);
+  renderHistory();
+  setStatus("History cleared.", "neutral");
+});
+
+btnHelp.addEventListener("click", openHelp);
+btnCloseHelp.addEventListener("click", closeHelp);
+helpBackdrop.addEventListener("click", closeHelp);
+
+btnTraining.addEventListener("click", () => {
+  if (!trainingMode) startTraining();
+  else stopTraining();
+});
+
+audioToggle.addEventListener("change", (e) => {
+  saveAudioPref(e.target.checked);
+  setStatus(audioEnabled ? "Audio enabled." : "Audio disabled.", "neutral");
+  ensureAudio();
+});
 
 // =====================
 // Init
