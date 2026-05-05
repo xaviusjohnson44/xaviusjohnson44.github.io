@@ -1,1 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stratagem SOC Toolkit</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">⬡</div>
+      <div class="brandtext">
+        <h1>Stratagem SOC Toolkit</h1>
+        <p>Call in OSINT & defender tools with arrow-code stratagems.</p>
+      </div>
+    </div>
 
+    <div class="kbdhint">
+      <div class="hint-row">
+        <span class="pill">Arrow Keys</span>
+        <span class="pill">Backspace = Undo</span>
+        <span class="pill">Esc = Clear</span>
+        <span class="pill">Enter = Launch</span>
+
+        <label class="pill toggle" title="Toggle sound effects">
+          <input id="audioToggle" type="checkbox" />
+          <span class="toggle-ui" aria-hidden="true"></span>
+          <span>Audio</span>
+        </label>
+      </div>
+      <button id="btnHelp" class="btn ghost" type="button">Help</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="console card">
+      <div class="console-top">
+        <div class="console-title">
+          <span class="dot"></span>
+          <span>STRATAGEM CONSOLE</span>
+        </div>
+        <div class="console-status" id="statusText">Ready.</div>
+      </div>
+
+      <div class="console-body" id="consoleBody">
+        <div class="sequence" id="sequenceDisplay" aria-live="polite">—</div>
+        <div class="subrow">
+          <div class="mini">Prefix-by-category enabled • Categories fixed</div>
+          <div class="mini right" id="prefixHint">Type a code…</div>
+        </div>
+      </div>
+
+      <div class="console-actions">
+        <button id="btnClear" class="btn ghost" type="button">Clear</button>
+        <button id="btnUndo" class="btn ghost" type="button">Undo</button>
+        <button id="btnLaunch" class="btn primary" type="button">Launch</button>
+      </div>
+    </section>
+
+    <section id="resultRegion" class="result"></section>
+
+    <section class="grid">
+      <section class="card panel">
+        <div class="panel-head">
+          <h2>Browse Tools</h2>
+          <input id="toolSearch" class="input" type="search" placeholder="Search tools (e.g., 'hash', 'dns', 'mitre')"/>
+        </div>
+        <div id="toolList" class="toollist" aria-live="polite"></div>
+      </section>
+
+      <section class="card panel">
+        <div class="panel-head">
+          <h2>Recent Calls</h2>
+          <button id="btnClearHistory" class="btn ghost small" type="button">Clear</button>
+        </div>
+        <div id="historyList" class="history"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Help Modal -->
+  <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+    <div class="modal-backdrop" id="helpBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="helpTitle">How it works</h3>
+        <button class="btn ghost small" id="btnCloseHelp" type="button">Close</button>
+      </div>
+
+      <div class="modal-body">
+        <p>
+          Enter a stratagem code using <strong>arrow keys</strong>. A matching tool card will appear.
+          Press <strong>Enter</strong> (or Launch) to open it in a new tab.
+        </p>
+
+        <h4>Fixed Category Prefixes</h4>
+        <div id="categoryLegend" class="legend"></div>
+
+        <h4>Tips</h4>
+        <ul>
+          <li>Backspace undoes the last arrow. Esc clears the whole code.</li>
+          <li>If you forget a full code, use Browse Tools search.</li>
+          <li>Audio stingers are optional; toggle them in the header.</li>
+        </ul>
+
+        <p class="tiny">
+          Safety note: Some external sites may log queries or submissions. Use discretion with sensitive indicators.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span class="tiny">Built for modern defenders. GitHub Pages friendly.</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
