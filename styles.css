@@ -1,7 +1,5 @@
 :root{
   --bg: #0b1020;
-  --panel: #0f1731;
-  --panel2:#0c1329;
   --text:#e7ecff;
   --muted:#a7b2e6;
   --border: rgba(255,255,255,.08);
@@ -22,10 +20,11 @@ html,body{height:100%}
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-  background: radial-gradient(1200px 700px at 20% 10%, rgba(139,92,246,.18), transparent 55%),
-              radial-gradient(900px 700px at 80% 20%, rgba(59,130,246,.14), transparent 55%),
-              radial-gradient(900px 700px at 50% 90%, rgba(20,184,166,.12), transparent 55%),
-              var(--bg);
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(139,92,246,.18), transparent 55%),
+    radial-gradient(900px 700px at 80% 20%, rgba(59,130,246,.14), transparent 55%),
+    radial-gradient(900px 700px at 50% 90%, rgba(20,184,166,.12), transparent 55%),
+    var(--bg);
   color:var(--text);
 }
 
@@ -49,60 +48,12 @@ body{
 .brandtext p{margin:2px 0 0;color:var(--muted);font-size:13px}
 
 .kbdhint{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.hint-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.hint-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center}
 .pill{
   font-size:12px;color:var(--muted);
   border:1px solid var(--border);
   padding:6px 10px;border-radius:999px;
   background: rgba(255,255,255,.03);
-}
-
-/* Audio toggle pill styling */
-.pill.toggle{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  user-select:none;
-}
-
-.pill.toggle input{
-  position:absolute;
-  opacity:0;
-  width:1px;
-  height:1px;
-}
-
-.toggle-ui{
-  width:34px;
-  height:18px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.20);
-  position:relative;
-  flex:0 0 auto;
-}
-
-.toggle-ui::after{
-  content:"";
-  width:14px;
-  height:14px;
-  border-radius:999px;
-  background: rgba(231,236,255,.88);
-  position:absolute;
-  top:50%;
-  left:2px;
-  transform: translateY(-50%);
-  transition: left .14s ease, background .14s ease;
-}
-
-.pill.toggle input:checked + .toggle-ui{
-  border-color: rgba(20,184,166,.45);
-  background: rgba(20,184,166,.18);
-}
-
-.pill.toggle input:checked + .toggle-ui::after{
-  left:18px;
-  background: rgba(20,184,166,.95);
 }
 
 .container{
@@ -137,7 +88,6 @@ body{
   text-align:center;
   padding: 14px 10px;
   user-select:none;
-
   display:flex;
   justify-content:center;
   align-items:center;
@@ -270,6 +220,7 @@ body{
 }
 .tiny{font-size:12px;color:var(--muted)}
 
+/* Modal */
 .modal[hidden]{display:none}
 .modal{position:fixed; inset:0; display:grid; place-items:center; z-index:50}
 .modal-backdrop{position:absolute; inset:0; background: rgba(0,0,0,.55)}
@@ -292,118 +243,81 @@ body{
 .legend-item .lbl{font-weight:700;font-size:13px}
 .legend-item .sub{color:var(--muted);font-size:12px;margin-top:2px}
 
-/* =========================
-   Input cadence animation
-   ========================= */
-.sequence .arrow {
-  display:inline-block;
-  padding: 2px 0;
-  border-radius: 10px;
-  transform: translateZ(0);
-}
-
-.sequence .arrow.last {
-  animation: arrowTick 120ms ease-out;
-}
-
-@keyframes arrowTick {
-  0%   { transform: translateY(0) scale(1); filter: brightness(1); }
-  50%  { transform: translateY(-1px) scale(1.08); filter: brightness(1.35); }
-  100% { transform: translateY(0) scale(1); filter: brightness(1); }
-}
-
-/* Subtle console flash per input */
-.console-body.flash {
-  animation: consoleFlash 120ms ease-out;
-}
-
-@keyframes consoleFlash {
-  0%   { box-shadow: 0 0 0 rgba(255,255,255,0); }
-  45%  { box-shadow: 0 0 0 6px rgba(255,255,255,.06); }
-  100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
-}
-
-/* Stronger pulse on successful match */
-.console-body.success {
-  animation: successPulse 220ms ease-out;
-}
-
-@keyframes successPulse {
-  0%   { box-shadow: 0 0 0 rgba(59,130,246,0); }
-  55%  { box-shadow: 0 0 0 7px rgba(59,130,246,.18); }
-  100% { box-shadow: 0 0 0 rgba(59,130,246,0); }
-}
-
-/* =========================
-   Call-in drop animation (result card)
-   ========================= */
-.result-card.drop {
-  animation:
-    dropIn 220ms ease-out both,
-    shake 240ms ease-out 160ms both;
-}
-
-@keyframes dropIn {
-  0%   { opacity: 0; transform: translateY(-10px) scale(.98); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes shake {
-  0%   { transform: translateX(0); }
-  25%  { transform: translateX(-3px); }
-  50%  { transform: translateX(3px); }
-  75%  { transform: translateX(-2px); }
-  100% { transform: translateX(0); }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .sequence .arrow.last,
-  .console-body.flash,
-  .console-body.success,
-  .result-card.drop {
-    animation: none !important;
-  }
-}
-
-
+/* Training prompt */
 .training{
-  margin-top:10px;
-  padding:10px;
-  border-radius:12px;
-  background:rgba(0,0,0,.25);
-  border:1px dashed rgba(255,255,255,.18);
-  font-size:13px;
-  color:#e7ecff;
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px dashed rgba(255,255,255,.16);
+  background: rgba(0,0,0,.18);
+  color: rgba(231,236,255,.92);
+  font-size: 13px;
+}
+
+/* Audio toggle */
+.pill.toggle{display:flex;align-items:center;gap:8px;user-select:none}
+.pill.toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle-ui{
+  width:34px;height:18px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.20);position:relative;flex:0 0 auto;
+}
+.toggle-ui::after{
+  content:"";width:14px;height:14px;border-radius:999px;background: rgba(231,236,255,.88);
+  position:absolute;top:50%;left:2px;transform: translateY(-50%);
+  transition:left .14s ease, background .14s ease;
+}
+.pill.toggle input:checked + .toggle-ui{border-color: rgba(20,184,166,.45);background: rgba(20,184,166,.18)}
+.pill.toggle input:checked + .toggle-ui::after{left:18px;background: rgba(20,184,166,.95)}
+
+/* Input cadence */
+.sequence .arrow{display:inline-block;padding:2px 0;border-radius:10px;transform: translateZ(0)}
+.sequence .arrow.last{animation: arrowTick 120ms ease-out}
+@keyframes arrowTick{
+  0%{transform: translateY(0) scale(1);filter:brightness(1)}
+  50%{transform: translateY(-1px) scale(1.08);filter:brightness(1.35)}
+  100%{transform: translateY(0) scale(1);filter:brightness(1)}
+}
+
+/* Console flash */
+.console-body.flash{animation: consoleFlash 120ms ease-out}
+@keyframes consoleFlash{
+  0%{box-shadow:0 0 0 rgba(255,255,255,0)}
+  45%{box-shadow:0 0 0 6px rgba(255,255,255,.06)}
+  100%{box-shadow:0 0 0 rgba(255,255,255,0)}
+}
+.console-body.success{animation: successPulse 220ms ease-out}
+@keyframes successPulse{
+  0%{box-shadow:0 0 0 rgba(59,130,246,0)}
+  55%{box-shadow:0 0 0 7px rgba(59,130,246,.18)}
+  100%{box-shadow:0 0 0 rgba(59,130,246,0)}
 }
 
 /* Buffer timeout fade */
-.console-body.timeout {
+.console-body.timeout{
   opacity:.6;
-  transition:opacity .4s ease;
+  transition: opacity .35s ease;
 }
 
-/* Call-in drop animation */
+/* Call-in drop */
 .result-card.drop{
-  animation:
-    dropIn .22s ease-out both,
-    shake .24s ease-out .16s both;
+  animation: dropIn 220ms ease-out both, shake 240ms ease-out 160ms both;
 }
-
 @keyframes dropIn{
-  from{opacity:0;transform:translateY(-10px) scale(.98)}
-  to{opacity:1;transform:none}
+  0%{opacity:0;transform: translateY(-10px) scale(.98)}
+  100%{opacity:1;transform: translateY(0) scale(1)}
 }
 @keyframes shake{
-  0%{transform:translateX(0)}
-  25%{transform:translateX(-3px)}
-  50%{transform:translateX(3px)}
-  75%{transform:translateX(-2px)}
-  100%{transform:none}
+  0%{transform: translateX(0)}
+  25%{transform: translateX(-3px)}
+  50%{transform: translateX(3px)}
+  75%{transform: translateX(-2px)}
+  100%{transform: translateX(0)}
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
-  *{animation:none!important;transition:none!important}
+  .sequence .arrow.last,
+  .console-body.flash,
+  .console-body.success,
+  .result-card.drop{animation:none !important}
 }
-
