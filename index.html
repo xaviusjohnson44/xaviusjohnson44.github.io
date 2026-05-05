@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stratagem SOC Toolkit</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -28,7 +29,12 @@
           <span class="toggle-ui" aria-hidden="true"></span>
           <span>Audio</span>
         </label>
+
+        <button id="btnTraining" class="btn ghost small" type="button" title="Training mode">
+          Training
+        </button>
       </div>
+
       <button id="btnHelp" class="btn ghost" type="button">Help</button>
     </div>
   </header>
@@ -46,7 +52,7 @@
       <div class="console-body" id="consoleBody">
         <div class="sequence" id="sequenceDisplay" aria-live="polite">—</div>
         <div class="subrow">
-          <div class="mini">Prefix-by-category enabled • Categories fixed</div>
+          <div class="mini">Prefix-by-category enabled • Categories fixed • Timeout enabled</div>
           <div class="mini right" id="prefixHint">Type a code…</div>
         </div>
       </div>
@@ -79,6 +85,43 @@
     </section>
   </main>
 
+  <!-- Training Modal -->
+  <div id="trainingModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="trainingTitle" hidden>
+    <div class="modal-backdrop" id="trainingBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="trainingTitle">Training Mode</h3>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span id="trainingScore" class="pill" style="background: rgba(0,0,0,.20);">0 / 0</span>
+          <button class="btn ghost small" id="btnCloseTraining" type="button">Exit</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <p id="trainingPrompt" style="margin-top:0;">
+          Press <strong>Start</strong> to receive a mission. Then enter the stratagem code with arrow keys.
+        </p>
+
+        <div class="training-panel">
+          <div class="training-row">
+            <div class="badge" id="trainingCategoryBadge">Category: —</div>
+            <div class="badge" id="trainingHintBadge">Hint: —</div>
+          </div>
+
+          <div class="training-actions">
+            <button id="btnTrainingStart" class="btn primary" type="button">Start</button>
+            <button id="btnTrainingNext" class="btn ghost" type="button" disabled>Next</button>
+            <button id="btnTrainingReveal" class="btn ghost" type="button" disabled>Reveal Answer</button>
+          </div>
+
+          <div class="tiny" id="trainingFooter">
+            Tip: Training never auto-opens external tools — it’s just muscle memory practice.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Help Modal -->
   <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
     <div class="modal-backdrop" id="helpBackdrop"></div>
@@ -97,11 +140,15 @@
         <h4>Fixed Category Prefixes</h4>
         <div id="categoryLegend" class="legend"></div>
 
-        <h4>Tips</h4>
+        <h4>Timeout</h4>
         <ul>
-          <li>Backspace undoes the last arrow. Esc clears the whole code.</li>
-          <li>If you forget a full code, use Browse Tools search.</li>
-          <li>Audio stingers are optional; toggle them in the header.</li>
+          <li>If you pause too long mid-code, the buffer clears automatically (like a failed input window).</li>
+        </ul>
+
+        <h4>Training</h4>
+        <ul>
+          <li>Training gives you a “mission” and you enter the correct tool stratagem.</li>
+          <li>Use <em>Reveal</em> if you get stuck; <em>Next</em> loads another prompt.</li>
         </ul>
 
         <p class="tiny">
@@ -114,7 +161,5 @@
   <footer class="footer">
     <span class="tiny">Built for modern defenders. GitHub Pages friendly.</span>
   </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
